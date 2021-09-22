@@ -14,6 +14,7 @@ let tools = []
 let fees;
 
 const connectCeloWallet = async function () {
+    console.log("connecting celo")
   if (window.celo) {
     try {
       notification("⚠️ Please approve this DApp to use it.")
@@ -49,10 +50,6 @@ const getBalance = async function () {
   document.querySelector("#balance").textContent = cUSDBalance
 }
 
-
-document.querySelector("#debug-btn").addEventListener('click', async (e) => {
-  const res = await contract.methods.getToolsLength().call();
-})
 
 document
   .querySelector("#newProductBtn")
@@ -104,8 +101,6 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
   }
 })
 
-
- 
 document.querySelector("#marketplace").addEventListener("click", async (e) => {
   if (e.target.className.includes("returnBtn")) {
     const date = new Date();
@@ -305,6 +300,7 @@ function identiconTemplate(_address) {
 
 window.addEventListener('load', async () => {
   notification("⌛ Loading...")
+  console.log('loading before celo')
   await connectCeloWallet()
   await getBalance()
   await getTools()
