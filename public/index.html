@@ -57,18 +57,29 @@
           <div class="alert alert-warning sticky-top mt-2" role="alert">
             <span id="notification">⌛ Loading...</span>
           </div>
-          
-          
+          <div class="btn-group">
             <div class="mb-6" style="margin-top: 4em">
-            <a
-                class="btn btn-dark rounded-pill border-bottom"
-                data-bs-toggle="modal"
-                data-bs-target="#addModal"
-            >
-                Add Tool
-            </a>
-            </div>
+              <a
+                  class="btn btn-dark rounded-pill border-bottom"
+                  data-bs-toggle="modal"
+                  data-bs-target="#addModal"
+              >
+                  Add Tool
+              </a>
+              </div>
+  
+              <div class="mb-7" style="margin-top: 4em">
+              <a
+                  class="btn btn-dark rounded-pill border-bottom"
+                  data-bs-toggle="modal"
+                  data-bs-target="#employeeModal"
+              >
+                  Set Employee
+              </a>
+              </div>
             
+          </div>
+          
         </div>
           <main id="marketplace" class="row"></main>
         </div>
@@ -145,19 +156,19 @@
         </div>
         <!--/Modal-->
 
-        <!--CheckoutModal-->
+        <!--Employee Modal-->
         <div
         class="modal fade"
-        id="checkoutModal"
+        id="employeeModal"
         tabindex="-1"
-        aria-labelledby="checkoutModalLabel"
+        aria-labelledby="employeeModalLabel"
         aria-hidden="true"
         >
         <div class="modal-dialog">
         <div class="modal-content">
 
             <div class="modal-header">
-            <h5 class="modal-title" id="checkoutModalLabel">Checkout Tool</h5>
+            <h5 class="modal-title" id="employeeModalLabel">Set Employee</h5>
             <button
                 type="button"
                 class="btn-close"
@@ -171,9 +182,15 @@
                     <div class="col">
                       <input
                         type="text"
-                        id="checkoutIndex"
+                        id="employeeAddress"
                         class="form-control mb-2"
-                        placeholder="Enter tool index"
+                        placeholder="Enter address"
+                      />
+                      <input
+                        type="text"
+                        id="employeeState"
+                        class="form-control mb-2"
+                        placeholder="Enter state"
                       />
                     </div>
                     
@@ -193,9 +210,9 @@
                   type="button"
                   class="btn btn-dark"
                   data-bs-dismiss="modal"
-                  id="checkoutBtn"
+                  id="employeeBtn"
                 >
-                  Checkout
+                  Set Employee
                 </button>
               </div>
             </div>

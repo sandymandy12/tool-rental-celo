@@ -6,7 +6,8 @@ import toolrentalabi from "../contract/toolrental.abi.json"
 
 const ERC20_DECIMALS = 18
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
-const trContractAddress = '0x679e5c2979D549373a5Ba3b7F5E37C54Bb5ed841';
+// const trContractAddress = '0x679e5c2979D549373a5Ba3b7F5E37C54Bb5ed841';
+const trContractAddress = '0x767439C2BBb7c30F90868E975a451ffC2AF1FA0B';
 
 let kit
 let contract
@@ -50,9 +51,31 @@ const getBalance = async function () {
   document.querySelector("#balance").textContent = cUSDBalance
 }
 
-
 document
   .querySelector("#newProductBtn")
+  .addEventListener("click", async (e) => {
+    const params = [
+      document.getElementById("newToolName").value,
+      document.getElementById("newImgUrl").value,
+      new BigNumber(document.getElementById("newPrice").value)
+      .shiftedBy(ERC20_DECIMALS)
+      .toString()
+    ]
+    notification(`⌛ Adding "${params[0]}"...`)
+    try {
+        const result = await contract.methods
+          .addTool(...params)
+          .send({ from: kit.defaultAccount })
+        console.log(result);
+      } catch (error) {
+        notification(`⚠️ ${error}.`)
+      }
+      notification(`🎉 You successfully added "${params[0]}".`)
+      getTools()
+  })
+
+  document
+  .querySelector("#employeeBtn")
   .addEventListener("click", async (e) => {
     const params = [
       document.getElementById("newToolName").value,
@@ -96,7 +119,7 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
       getBalance()
     } catch (error) {
         console.log(error)
-        notification(`⚠️ ${error.message}. Check console for more detailsd`)
+        notification(`⚠️ ${error}`)
     }
   }
 })
@@ -135,7 +158,7 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
     try {
       
       const result = await contract.methods
-        .payFees(index, date.getTime() * 2)
+        .payFees(index, date.getTime())
         .send({ from: kit.defaultAccount });
       console.log(result);
       notification(`🎉 You successfully paid fees for "${tools[index].name}".`)
@@ -177,17 +200,21 @@ function renderTools() {
   tools.forEach((_tool) => {
     const newDiv = document.createElement("div")
     newDiv.className = "col-md-4"
-    if (_tool.available) 
-    {
+    if (_tool.available) {
       newDiv.innerHTML = checkoutTemplate(_tool);
     } else {
-      const date = new Date();
-      if (date.getTime() * 2 > _tool.duration & !_tool.feePaid) 
-      {
+      // const date = new Date();
+      // const addr = window.celo.selectedAddress;
+      // const owner = _tool.owner;
+      // addr.toUpperCase() == owner.toUpperCase())
+
+      if (date.getTime() > _tool.duration & !_tool.feePaid) {
         newDiv.innerHTML = lateFeeTemplate(_tool, fees);
       } else {
         newDiv.innerHTML = returnTemplate(_tool)
-      }
+      } // else {
+        // newDiv.innerHTML = usedTemplate(_tool)
+      // }
     }
     document.getElementById("marketplace").appendChild(newDiv)
   })
@@ -219,7 +246,7 @@ function checkoutTemplate(_product) {
           <a class="btn btn-lg btn-outline-dark bg-success checkoutBtn-${_product.name} fs-6 p-3" id=${
             _product.index
           }>
-            Checkout for ${_product.price.shiftedBy(-ERC20_DECIMALS).toFixed(6)} cUSD
+            Rent for ${_product.price.shiftedBy(-ERC20_DECIMALS).toFixed(6)} cUSD
           </a>
         </div>
       </div>
@@ -252,6 +279,31 @@ function returnTemplate(_product) {
   `
 }
 
+function usedTemplate(_product) {
+    return `
+      <div class="card mb-4">
+        <img class="card-img-top" src="${_product.image}" alt="...">
+        <div class="card-body text-left p-4 position-relative">
+          <div class="translate-middle-y position-absolute top-0">
+          ${identiconTemplate(_product.owner)}
+          </div>
+          <h2 class="card-title fs-4 fw-bold mt-2">${_product.name}</h2>
+          <p class="card-text mb-4" style="min-height: 82px">
+            Return by ${returnDate(rentalDuration())}             
+          </p>
+          
+          <div class="d-grid gap-2">
+            <a class="btn btn-lg btn-outline-dark usedBtn bg-secondary fs-6 p-3" id=${
+              _product.index
+            }>
+              Unavailable 
+            </a>
+          </div>
+        </div>
+      </div>
+    `
+  }
+
 function lateFeeTemplate(_product, _fee) {
   // fees = calculateFees(_tool.index, date.getTime());
   console.log(_fee);
@@ -271,7 +323,8 @@ function lateFeeTemplate(_product, _fee) {
           <a class="btn btn-lg btn-outline-dark bg-warning lateFeeBtn fs-6 p-3" id=${
             _product.index
           }>
-            Fees accrued
+            Fees accrued ~ ${new BigNumber(_product.price / 10)
+                .shiftedBy(-ERC20_DECIMALS).toFixed(6)} cUSD
           </a>
         </div>
       </div>
