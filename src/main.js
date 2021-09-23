@@ -6,13 +6,11 @@ import toolrentalabi from "../contract/toolrental.abi.json"
 
 const ERC20_DECIMALS = 18
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
-// const trContractAddress = '0x679e5c2979D549373a5Ba3b7F5E37C54Bb5ed841';
-const trContractAddress = '0x767439C2BBb7c30F90868E975a451ffC2AF1FA0B';
+const trContractAddress = '0x0558e87dc28663E14178Aa5aF68bDFd6fd551511';
 
 let kit
 let contract
 let tools = []
-let fees;
 
 const connectCeloWallet = async function () {
     console.log("connecting celo")
@@ -130,7 +128,6 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
     const index = e.target.id
     notification(`⌛ Awaiting payment for "${tools[index].name}"...`)
     try {
-      fees = await contract.methods.calculateFees(index, date.getTime()).call();
       const result = await contract.methods
         .returnTool(index, date.getTime())
         .send({ from: kit.defaultAccount });
@@ -203,18 +200,12 @@ function renderTools() {
     if (_tool.available) {
       newDiv.innerHTML = checkoutTemplate(_tool);
     } else {
-      // const date = new Date();
-      // const addr = window.celo.selectedAddress;
-      // const owner = _tool.owner;
-      // addr.toUpperCase() == owner.toUpperCase())
 
       if (date.getTime() > _tool.duration & !_tool.feePaid) {
-        newDiv.innerHTML = lateFeeTemplate(_tool, fees);
+        newDiv.innerHTML = lateFeeTemplate(_tool);
       } else {
         newDiv.innerHTML = returnTemplate(_tool)
-      } // else {
-        // newDiv.innerHTML = usedTemplate(_tool)
-      // }
+      } 
     }
     document.getElementById("marketplace").appendChild(newDiv)
   })
@@ -304,9 +295,7 @@ function usedTemplate(_product) {
     `
   }
 
-function lateFeeTemplate(_product, _fee) {
-  // fees = calculateFees(_tool.index, date.getTime());
-  console.log(_fee);
+function lateFeeTemplate(_product) {
   return `
     <div class="card mb-4">
       <img class="card-img-top" src="${_product.image}" alt="...">
