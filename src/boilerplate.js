@@ -35,7 +35,7 @@ const connectCeloWallet = async function () {
 
   async function approve(_price) {
     const cUSDContract = new kit.web3.eth.Contract(erc20Abi, cUSDContractAddress)
-    console.log("Approve")
+  
     const result = await cUSDContract.methods
       .approve(MPContractAddress, _price)
       .send({ from: kit.defaultAccount })

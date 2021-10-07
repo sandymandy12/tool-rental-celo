@@ -6,7 +6,7 @@ import toolrentalabi from "../contract/toolrental.abi.json"
 
 const ERC20_DECIMALS = 18
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
-const trContractAddress = '0xC7Ca51c87410E3421c582f59465F438825795171';
+const trContractAddress = '0x679e5c2979D549373a5Ba3b7F5E37C54Bb5ed841';
 
 let kit
 let contract
@@ -76,13 +76,12 @@ document
       notification(`🎉 You successfully added "${params[0]}".`)
       getTools()
   })
-
+ 
 document.querySelector("#marketplace").addEventListener("click", async (e) => {
   if (e.target.className.includes("checkoutBtn")) {
     const index = e.target.id
     notification("⌛ Waiting for payment approval...")
     try {
-      console.log(tools[index].price);
       await approve(tools[index].price)
     } catch (error) {
       notification(`⚠️ ${error}.`)
@@ -99,27 +98,23 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
       getTools()
       getBalance()
     } catch (error) {
-        notification(`⚠️ ${error}.`)
+        console.log(error)
+        notification(`⚠️ ${error.message}. Check console for more detailsd`)
     }
   }
 })
+
+
  
 document.querySelector("#marketplace").addEventListener("click", async (e) => {
   if (e.target.className.includes("returnBtn")) {
-    const index = e.target.id
-    notification("⌛ Waiting for payment approval...")
-    try {
-      console.log(tools[index].price);
-      await approve(tools[index].price)
-    } catch (error) {
-      notification(`⚠️ ${error}.`)
-    }
-    notification(`⌛ Awaiting payment for "${tools[index].name}"...`)
     const date = new Date();
+    const index = e.target.id
+    notification(`⌛ Awaiting payment for "${tools[index].name}"...`)
     try {
-      
+      fees = await contract.methods.calculateFees(index, date.getTime()).call();
       const result = await contract.methods
-        .returnTool(index, date)
+        .returnTool(index, date.getTime())
         .send({ from: kit.defaultAccount });
       console.log(result);
       notification(`🎉 You successfully returned "${tools[index].name}".`)
@@ -131,6 +126,32 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
   }
 })
 
+document.querySelector("#marketplace").addEventListener("click", async (e) => {
+  if (e.target.className.includes("lateFeeBtn")) {
+    const index = e.target.id
+    notification("⌛ Waiting for payment approval...")
+    try {
+      await approve(tools[index].price)
+    } catch (error) {
+      notification(`⚠️ ${error}.`)
+    }
+    notification(`⌛ Awaiting payment for "${tools[index].name}"...`)
+    const date = new Date();
+    try {
+      
+      const result = await contract.methods
+        .payFees(index, date.getTime() * 2)
+        .send({ from: kit.defaultAccount });
+      console.log(result);
+      notification(`🎉 You successfully paid fees for "${tools[index].name}".`)
+      getTools()
+      getBalance()
+    } catch (error) {
+        console.log(error)
+        notification(`⚠️ ${error.message}.`)
+    }
+  }
+})
 
 const getTools = async function() {
   const _toolsLength = await contract.methods.getToolsLength().call()
@@ -161,14 +182,14 @@ function renderTools() {
   tools.forEach((_tool) => {
     const newDiv = document.createElement("div")
     newDiv.className = "col-md-4"
-    if (_tool.available) {
-      newDiv.innerHTML = checkoutTemplate(_tool)
+    if (_tool.available) 
+    {
+      newDiv.innerHTML = checkoutTemplate(_tool);
     } else {
       const date = new Date();
-      console.log("renderTools", date.getTime() >_tool.duration)
-      if (date.getTime() > _tool.duration & !_tool.feePaid) {
-        fees = contracts.methods.calculateFees().call();
-        newDiv.innerHTML = lateFeeTemplate(_tool);
+      if (date.getTime() * 2 > _tool.duration & !_tool.feePaid) 
+      {
+        newDiv.innerHTML = lateFeeTemplate(_tool, fees);
       } else {
         newDiv.innerHTML = returnTemplate(_tool)
       }
@@ -212,7 +233,6 @@ function checkoutTemplate(_product) {
 }
 
 function returnTemplate(_product) {
-  console.log(fees);
   return `
     <div class="card mb-4">
       <img class="card-img-top" src="${_product.image}" alt="...">
@@ -229,7 +249,7 @@ function returnTemplate(_product) {
           <a class="btn btn-lg btn-outline-dark returnBtn bg-primary fs-6 p-3" id=${
             _product.index
           }>
-            Return
+            Return 
           </a>
         </div>
       </div>
@@ -237,8 +257,9 @@ function returnTemplate(_product) {
   `
 }
 
-function lateFeeTemplate(_product) {
-  console.log(fees)
+function lateFeeTemplate(_product, _fee) {
+  // fees = calculateFees(_tool.index, date.getTime());
+  console.log(_fee);
   return `
     <div class="card mb-4">
       <img class="card-img-top" src="${_product.image}" alt="...">
@@ -252,10 +273,10 @@ function lateFeeTemplate(_product) {
         </p>
         
         <div class="d-grid gap-2">
-          <a class="btn btn-lg btn-outline-dark bg-danger checkoutBtn fs-6 p-3" id=checkoutBtn-${
-            _product.name
+          <a class="btn btn-lg btn-outline-dark bg-warning lateFeeBtn fs-6 p-3" id=${
+            _product.index
           }>
-            Pay fee: ${new BigNumber(fees).shiftedBy(-ERC20_DECIMALS).toFixed(6)} cUSD
+            Fees accrued
           </a>
         </div>
       </div>
@@ -300,10 +321,4 @@ function returnDate(_time) {
   const rb = new Date();
   rb.setTime(_time);
   return `${rb.getUTCMonth()+1}/${rb.getDate()}/${rb.getUTCFullYear()}`; 
-}
-
-function calculateFees() {
-  return new Promise(resolve => {
-    resolve(contracts.methods.calculateFees().call())
-  })
 }
