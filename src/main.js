@@ -7,7 +7,7 @@ import toolrentalabi from "../contract/toolrental.abi.json"
 const ERC20_DECIMALS = 18
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
 // const trContractAddress = '0x679e5c2979D549373a5Ba3b7F5E37C54Bb5ed841';
-const trContractAddress = '0x13B24b866fAd63c238901c5D77aB2fb68AF038b6';
+const trContractAddress = '0xCEc28Bd240F8B6D49F7fb7743153B34bc044b1f1';
 
 let kit
 let contract
@@ -70,7 +70,7 @@ document
         const result = await contract.methods
           .addTool(...params)
           .send({ from: kit.defaultAccount })
-        console.log(result);
+        console.log('add tool result',result);
       } catch (error) {
         notification(`⚠️ ${error}.`)
       }
@@ -92,9 +92,9 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
     try {
       
       const result = await contract.methods
-        .checkoutTool(index, duration)
+        .checkoutTool(index)
         .send({ from: kit.defaultAccount });
-      console.log(result);
+      console.log('checkout result',result);
       notification(`🎉 You successfully bought "${tools[index].name}".`)
       getTools()
       getBalance()
@@ -141,7 +141,7 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
     try {
       
       const result = await contract.methods
-        .payFees(index, date.getTime() * 2)
+        .payFees(index, date.getTime())
         .send({ from: kit.defaultAccount });
       console.log(result);
       notification(`🎉 You successfully paid fees for "${tools[index].name}".`)
@@ -188,7 +188,7 @@ function renderTools() {
       newDiv.innerHTML = checkoutTemplate(_tool);
     } else {
       const date = new Date();
-      if (date.getTime() * 2 > _tool.duration & !_tool.feePaid) 
+      if (date.getTime() > _tool.duration & !_tool.feePaid) 
       {
         newDiv.innerHTML = lateFeeTemplate(_tool, fees);
       } else {
