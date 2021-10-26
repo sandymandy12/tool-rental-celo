@@ -33,11 +33,6 @@
 				"internalType": "uint256",
 				"name": "_index",
 				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_date",
-				"type": "uint256"
 			}
 		],
 		"name": "calculateFees",
@@ -56,11 +51,6 @@
 			{
 				"internalType": "uint256",
 				"name": "_index",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_date",
 				"type": "uint256"
 			}
 		],
@@ -87,11 +77,6 @@
 			{
 				"internalType": "uint256",
 				"name": "_index",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_date",
 				"type": "uint256"
 			}
 		],
@@ -154,11 +139,6 @@
 			{
 				"internalType": "uint256",
 				"name": "_index",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_date",
 				"type": "uint256"
 			}
 		],

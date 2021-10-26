@@ -83,7 +83,7 @@ contract ToolRental {
         );
     }
     
-    function checkoutTool(uint _index,uint _date) public payable  {
+    function checkoutTool(uint _index) public payable  {
         require(tools[_index].available, "Tool not available");
         require(
           IERC20Token(cUsdTokenAddress).transferFrom(
@@ -94,46 +94,49 @@ contract ToolRental {
           "Checkout failed."
         );
         tools[_index].available = false;
-        tools[_index].duration = _date;
+        tools[_index].duration = (block.timestamp) + 14 days;
         tools[_index].feePaid = false;
         
     }
     
-    function returnTool(uint _index, uint _date) public onlyEmployees {
+    function returnTool(uint _index) public {
         
         require(tools[_index].available == false, "Tool is available");
         
-        if(calculateFees(_index, _date) > 0) { // returns 0 unless past deadline
+        if(calculateFees(_index) > 0) { // returns 0 unless past deadline
             require(tools[_index].feePaid = true, "Fee not paid");
         }
         
         tools[_index].available = true;
-        tools[_index].duration = _date;
+        tools[_index].duration = block.timestamp;
         delete tools[_index].feePaid;
         
     }
     
-    function calculateFees(uint _index, uint _date) public view returns(uint) {
+    function calculateFees(uint _index) public view returns(uint) {
         
-        if(_date > tools[_index].duration) {
+        if(block.timestamp > tools[_index].duration) {
             // planning to add extended daily fees based on date. 
             return(tools[_index].price / 10); // 10% is the idea but could use suggestions for a proper way
         }
         return(0);
     }
     
-    function payFees(uint _index, uint _date) public payable {
-        
-        require(calculateFees(_index, _date) > 0, "No fee accrued!");
-        require(
+    function payFees(uint _index) public payable {
+        uint fee = calculateFees(_index);
+        //require(calculateFees(_index, _date) > 0, "No fee accrued!");
+        if (fee > 0) {
+            require(
           IERC20Token(cUsdTokenAddress).transferFrom(
             msg.sender,
             manager,
-            calculateFees(_index, _date)
+            fee
           ),
           "Fee payment failed."
         );
         tools[_index].feePaid = true; // seems risky to do this at the end this way if there is a bug/error
+        }
+        
     }
     
     function getToolsLength() public view returns (uint) {
