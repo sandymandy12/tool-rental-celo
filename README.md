@@ -1,3 +1,8 @@
+## Live version
+https://gallant-poitras-ac0efb.netlify.app/
+
+
+
 # Install
 
 ```
@@ -34,3 +39,4 @@ npm run build
 2. Create a wallet.
 3. Go to [https://celo.org/developers/faucet](https://celo.org/developers/faucet) and get tokens for the alfajores testnet.
 4. Switch to the alfajores testnet in the CeloExtensionWallet.
+5. Go to https://gallant-poitras-ac0efb.netlify.app/
