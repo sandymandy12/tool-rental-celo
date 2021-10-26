@@ -6,7 +6,8 @@ import toolrentalabi from "../contract/toolrental.abi.json"
 
 const ERC20_DECIMALS = 18
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
-const trContractAddress = '0x679e5c2979D549373a5Ba3b7F5E37C54Bb5ed841';
+// const trContractAddress = '0x679e5c2979D549373a5Ba3b7F5E37C54Bb5ed841';
+const trContractAddress = '0x13B24b866fAd63c238901c5D77aB2fb68AF038b6';
 
 let kit
 let contract
@@ -104,7 +105,6 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
   }
 })
 
-
  
 document.querySelector("#marketplace").addEventListener("click", async (e) => {
   if (e.target.className.includes("returnBtn")) {
@@ -125,6 +125,7 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
     }
   }
 })
+
 
 document.querySelector("#marketplace").addEventListener("click", async (e) => {
   if (e.target.className.includes("lateFeeBtn")) {
