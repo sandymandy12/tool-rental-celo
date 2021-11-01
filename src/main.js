@@ -51,9 +51,9 @@ const getBalance = async function () {
 }
 
 
-document.querySelector("#debug-btn").addEventListener('click', async (e) => {
-  const res = await contract.methods.getToolsLength().call();
-})
+// document.querySelector("#debug-btn").addEventListener('click', async (e) => {
+//   const res = await contract.methods.getToolsLength().call();
+// })
 
 document
   .querySelector("#newProductBtn")
@@ -88,7 +88,7 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
       notification(`⚠️ ${error}.`)
     }
     notification(`⌛ Awaiting payment for "${tools[index].name}"...`)
-    const duration = rentalDuration();
+    // const duration = rentalDuration();
     try {
       
       const result = await contract.methods
