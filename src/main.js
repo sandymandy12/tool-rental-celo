@@ -7,7 +7,9 @@ import toolrentalabi from "../contract/toolrental.abi.json"
 const ERC20_DECIMALS = 18
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
 // const trContractAddress = '0x679e5c2979D549373a5Ba3b7F5E37C54Bb5ed841';
-const trContractAddress = '0xCEc28Bd240F8B6D49F7fb7743153B34bc044b1f1';
+// const trContractAddress = '0xCEc28Bd240F8B6D49F7fb7743153B34bc044b1f1';
+const trContractAddress =     '0x689b867D3b13a26542cFbEfE0c14E8ad1AC3E96A';
+
 
 let kit
 let contract
@@ -157,10 +159,9 @@ document.querySelector("#marketplace").addEventListener("click", async (e) => {
 const getTools = async function() {
   const _toolsLength = await contract.methods.getToolsLength().call()
   const _tools = []
-  console.log("Tools: " + _toolsLength)
   for (let i = 0; i < _toolsLength; i++) {
       let _tool = new Promise(async (resolve, reject) => {
-        let p = await contract.methods.readTool(i).call()
+        let p = await contract.methods.tools(i).call()
         resolve({
           index: i,
           owner: p[0],
