@@ -1,8 +1,3 @@
-## Live version
-https://gallant-poitras-ac0efb.netlify.app/
-
-
-
 # Install
 
 ```
