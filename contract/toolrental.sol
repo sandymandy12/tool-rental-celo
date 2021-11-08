@@ -19,15 +19,12 @@ contract ToolRental {
     
     uint internal toolsLength = 0;
     address internal cUsdTokenAddress = 0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1;
-    address internal manager = 0xf8ACd6ae80453CC68CFe5a81781867D5b8F299b9;
-    mapping(address => bool) employees;
+    address internal manager;
     
-    modifier onlyEmployees() {
-        require(employees[msg.sender], "Must be employee");
-            _;
-    }
+    
     
     constructor() {
+        manager = msg.sender;
         employees[manager] = true;
     }
     
@@ -40,17 +37,25 @@ contract ToolRental {
         uint duration; // time in millis
         bool feePaid;
         bool available;
+        address rentedBy; //zero address means nobody has rented this
     }
 
 
-    mapping (uint => Tool) internal tools;
+    mapping (uint => Tool) public tools;
+    mapping(address => bool) employees;
+    
+    modifier onlyEmployees() {
+        require(employees[msg.sender], "Must be employee");
+            _;
+    }
 
     function addTool(
         string memory _name,
         string memory _image,
         uint _price
     ) public onlyEmployees {
-        
+        require(bytes(_name).length > 0, "Enter a valid tool name");
+        require(bytes(_name).length > 0, "Enter a valid image url");
         tools[toolsLength] = Tool(
             payable(msg.sender),
             _name,
@@ -58,30 +63,13 @@ contract ToolRental {
             _price,
             0,
             false,
-            true
+            true,
+            address(0)
         );
         toolsLength++;
     }
 
-    function readTool(uint _index) public view returns (
-        address payable,
-        string memory, 
-        string memory, 
-        uint, 
-        uint, 
-        bool,
-        bool
-    ) {
-        return (
-            tools[_index].owner,
-            tools[_index].name, 
-            tools[_index].image, 
-            tools[_index].price, 
-            tools[_index].duration,
-            tools[_index].feePaid,
-            tools[_index].available
-        );
-    }
+
     
     function checkoutTool(uint _index) public payable  {
         require(tools[_index].available, "Tool not available");
@@ -96,6 +84,7 @@ contract ToolRental {
         tools[_index].available = false;
         tools[_index].duration = (block.timestamp) + 14 days;
         tools[_index].feePaid = false;
+        tools[_index].rentedBy = msg.sender;
         
     }
     
@@ -110,6 +99,8 @@ contract ToolRental {
         tools[_index].available = true;
         tools[_index].duration = block.timestamp;
         delete tools[_index].feePaid;
+        // remove the user from the rented field
+        tools[_index].rentedBy = address(0);
         
     }
     
@@ -146,4 +137,22 @@ contract ToolRental {
     function setEmployees(address _empl, bool _state) public onlyEmployees {
         employees[_empl] = _state;
     }
+    
+    // function getRefund(uint _index) public onlyEmployees {
+        
+         
+    //     require(tools[_index].available == false, "Tool is available");
+    //     require(tools[_index].rentedBy == msg.sender, "Only the person who rented this tool can ask for a refund");
+    //     // ensure deadline hasnt been met
+    //     require(calculateFees(_index) == 0, "You cannot request a refund" );// returns 0 unless past deadline
+        
+    //     tools[_index].available = true;
+    //     tools[_index].duration = block.timestamp;
+    //     delete tools[_index].feePaid;
+    //     // remove the user from the rented field
+    //     tools[_index].rentedBy = address(0);
+        
+    //     IERC20Token(cUsdTokenAddress).transfer(msg.sender, tools[_index].price);
+        
+    // }
 }
