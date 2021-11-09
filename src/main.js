@@ -6,7 +6,7 @@ import toolrentalabi from "../contract/toolrental.abi.json"
 
 const ERC20_DECIMALS = 18
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
-const trContractAddress = '0x0558e87dc28663E14178Aa5aF68bDFd6fd551511';
+const trContractAddress = '0xEE87458CDB93A5adEF7539a217B54321e2762f44';
 
 let kit
 let contract
@@ -46,6 +46,8 @@ async function approve(_price) {
 const getBalance = async function () {
   const totalBalance = await kit.getTotalBalance(kit.defaultAccount)
   const cUSDBalance = totalBalance.cUSD.shiftedBy(-ERC20_DECIMALS).toFixed(2)
+  console.log('total balance',cUSDBalance)
+
   return cUSDBalance;
 }
 
